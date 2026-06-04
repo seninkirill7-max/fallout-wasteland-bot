@@ -50,9 +50,44 @@ cursor.execute(
 )
 db.commit()
 
+def set_xp(user_id, xp):
+cursor.execute(
+“UPDATE players SET xp=? WHERE user_id=?”,
+(xp, user_id)
+)
+db.commit()
+
+def set_level(user_id, level):
+cursor.execute(
+“UPDATE players SET level=? WHERE user_id=?”,
+(level, user_id)
+)
+db.commit()
+
+def add_money(user_id, amount):
+cursor.execute(
+“UPDATE players SET cnr_dollars=cnr_dollars+? WHERE user_id=?”,
+(amount, user_id)
+)
+db.commit()
+
+def remove_money(user_id, amount):
+cursor.execute(
+“UPDATE players SET cnr_dollars=cnr_dollars-? WHERE user_id=?”,
+(amount, user_id)
+)
+db.commit()
+
 def add_chips(user_id, amount):
 cursor.execute(
 “UPDATE players SET chips=chips+? WHERE user_id=?”,
+(amount, user_id)
+)
+db.commit()
+
+def remove_chips(user_id, amount):
+cursor.execute(
+“UPDATE players SET chips=chips-? WHERE user_id=?”,
 (amount, user_id)
 )
 db.commit()
@@ -64,9 +99,23 @@ cursor.execute(
 )
 db.commit()
 
+def remove_processors(user_id, amount):
+cursor.execute(
+“UPDATE players SET processors=processors-? WHERE user_id=?”,
+(amount, user_id)
+)
+db.commit()
+
 def add_modules(user_id, amount):
 cursor.execute(
 “UPDATE players SET modules=modules+? WHERE user_id=?”,
+(amount, user_id)
+)
+db.commit()
+
+def remove_modules(user_id, amount):
+cursor.execute(
+“UPDATE players SET modules=modules-? WHERE user_id=?”,
 (amount, user_id)
 )
 db.commit()
@@ -78,23 +127,9 @@ cursor.execute(
 )
 db.commit()
 
-def add_money(user_id, amount):
+def remove_cores(user_id, amount):
 cursor.execute(
-“UPDATE players SET cnr_dollars=cnr_dollars+? WHERE user_id=?”,
+“UPDATE players SET cores=cores-? WHERE user_id=?”,
 (amount, user_id)
-)
-db.commit()
-
-def set_level(user_id, level):
-cursor.execute(
-“UPDATE players SET level=? WHERE user_id=?”,
-(level, user_id)
-)
-db.commit()
-
-def set_xp(user_id, xp):
-cursor.execute(
-“UPDATE players SET xp=? WHERE user_id=?”,
-(xp, user_id)
 )
 db.commit()
