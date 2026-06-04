@@ -19,3 +19,17 @@ atomic_caps INTEGER DEFAULT 0
 “””)
 
 db.commit()
+
+def create_player(user_id):
+cursor.execute(
+“INSERT OR IGNORE INTO players (user_id) VALUES (?)”,
+(user_id,)
+)
+db.commit()
+
+def get_player(user_id):
+cursor.execute(
+“SELECT * FROM players WHERE user_id = ?”,
+(user_id,)
+)
+return cursor.fetchone()
