@@ -11,7 +11,12 @@ from database import (
     get_player,
     add_xp,
     add_chips,
-    add_money
+    add_processors,
+    add_modules,
+    add_cores,
+    add_money,
+    set_xp,
+    set_level,
 )
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
@@ -22,17 +27,28 @@ dp = Dispatcher()
 
 def main_menu():
     builder = ReplyKeyboardBuilder()
-
     builder.button(text="📊 Статистика")
     builder.button(text="🎒 Инвентарь")
     builder.button(text="☢ Выход в Пустоши")
     builder.button(text="🏋 Тренировочный зал")
     builder.button(text="🛒 Торговая лавка")
     builder.button(text="🏛 Обменный бункер")
-
     builder.adjust(1)
-
     return builder.as_markup(resize_keyboard=True)
+
+
+def check_level_up(user_id):
+    player = get_player(user_id)
+
+    level = player[1]
+    xp = player[2]
+
+    while xp >= level * 100:
+        xp -= level * 100
+        level += 1
+
+    set_level(user_id, level)
+    set_xp(user_id, xp)
 
 
 @dp.message(F.text == "/start")
@@ -52,7 +68,7 @@ async def stats(message: Message):
     await message.answer(
         f"📊 Статистика персонажа\n\n"
         f"🎖 Уровень: {player[1]}\n"
-        f"⭐ Опыт: {player[2]}\n\n"
+        f"⭐ Опыт: {player[2]}/{player[1] * 100}\n\n"
         f"❤️ Здоровье: {player[3]}\n"
         f"🛡 Броня: {player[4]}\n"
         f"⚡ Выносливость: {player[5]}\n\n"
@@ -81,6 +97,8 @@ async def inventory(message: Message):
 
 @dp.message(F.text == "☢ Выход в Пустоши")
 async def wasteland(message: Message):
+    user_id = message.from_user.id
+
     enemies = [
         "Радтаракан",
         "Кротокрыс",
@@ -92,35 +110,54 @@ async def wasteland(message: Message):
     enemy = random.choice(enemies)
 
     xp_reward = random.randint(5, 15)
-    chips_reward = random.randint(1, 3)
     money_reward = random.randint(5, 20)
 
-    add_xp(message.from_user.id, xp_reward)
-    add_chips(message.from_user.id, chips_reward)
-    add_money(message.from_user.id, money_reward)
+    add_xp(user_id, xp_reward)
+    add_money(user_id, money_reward)
+
+    loot_text = ""
+
+    player = get_player(user_id)
+    level = player[1]
+
+    chips = random.randint(1, 3)
+    add_chips(user_id, chips)
+    loot_text += f"⚙ Микросхемы: {chips}\n"
+
+    if level >= 10 and random.randint(1, 100) <= 25:
+        add_processors(user_id, 1)
+        loot_text += "💾 Найден военный процессор: 1\n"
+
+    if level >= 25 and random.randint(1, 100) <= 15:
+        add_modules(user_id, 1)
+        loot_text += "🔷 Найден тактический модуль: 1\n"
+
+    if level >= 50 and random.randint(1, 100) <= 5:
+        add_cores(user_id, 1)
+        loot_text += "☢ Найдено ядерное ядро: 1\n"
+
+    check_level_up(user_id)
 
     await message.answer(
         f"☢ Вы исследовали Пустоши\n\n"
-        f"👤 Встречен противник: {enemy}\n\n"
-        f"🏆 Получено опыта: {xp_reward}\n"
-        f"⚙ Получено микросхем: {chips_reward}\n"
-        f"💵 Получено долларов КНР: {money_reward}"
+        f"👤 Противник: {enemy}\n\n"
+        f"🏆 Опыт: +{xp_reward}\n"
+        f"💵 Доллары КНР: +{money_reward}\n\n"
+        f"{loot_text}"
     )
 
 
 @dp.message(F.text == "🏋 Тренировочный зал")
 async def gym(message: Message):
     await message.answer(
-        "🏋 Тренировочный зал\n\n"
-        "Для входа потребуются Облигации."
+        "🏋 Тренировочный зал\n\nДля входа потребуются Облигации."
     )
 
 
 @dp.message(F.text == "🛒 Торговая лавка")
 async def shop(message: Message):
     await message.answer(
-        "🛒 Торговая лавка\n\n"
-        "Магазин находится в разработке."
+        "🛒 Торговая лавка\n\nМагазин находится в разработке."
     )
 
 
@@ -128,7 +165,11 @@ async def shop(message: Message):
 async def bunker(message: Message):
     await message.answer(
         "🏛 Обменный бункер\n\n"
-        "Здесь можно будет обменивать Атомные крышки."
+        "Цены:\n"
+        "⚙ Микросхема = 5 $\n"
+        "💾 Процессор = 25 $\n"
+        "🔷 Модуль = 100 $\n"
+        "☢ Ядерное ядро = 500 $"
     )
 
 
