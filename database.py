@@ -42,20 +42,58 @@ def set_level(user_id, level):cursor.execute("UPDATE players SET level=? WHERE u
 
 def add_money(user_id, amount):cursor.execute("UPDATE players SET cnr_dollars=cnr_dollars+? WHERE user_id=?",(amount, user_id))db.commit()
 
-def remove_money(user_id, amount):cursor.execute("UPDATE players SET cnr_dollars=cnr_dollars-? WHERE user_id=?",(amount, user_id))db.commit()
-
 def add_chips(user_id, amount):cursor.execute("UPDATE players SET chips=chips+? WHERE user_id=?",(amount, user_id))db.commit()
-
-def remove_chips(user_id, amount):cursor.execute("UPDATE players SET chips=chips-? WHERE user_id=?",(amount, user_id))db.commit()
 
 def add_processors(user_id, amount):cursor.execute("UPDATE players SET processors=processors+? WHERE user_id=?",(amount, user_id))db.commit()
 
-def remove_processors(user_id, amount):cursor.execute("UPDATE players SET processors=processors-? WHERE user_id=?",(amount, user_id))db.commit()
-
 def add_modules(user_id, amount):cursor.execute("UPDATE players SET modules=modules+? WHERE user_id=?",(amount, user_id))db.commit()
-
-def remove_modules(user_id, amount):cursor.execute("UPDATE players SET modules=modules-? WHERE user_id=?",(amount, user_id))db.commit()
 
 def add_cores(user_id, amount):cursor.execute("UPDATE players SET cores=cores+? WHERE user_id=?",(amount, user_id))db.commit()
 
-def remove_cores(user_id, amount):cursor.execute("UPDATE players SET cores=cores-? WHERE user_id=?",(amount, user_id))db.commit()
+def sell_all_chips(user_id):player = get_player(user_id)amount = player[11]money = amount * 5
+
+cursor.execute(
+    "UPDATE players SET chips=0 WHERE user_id=?",
+    (user_id,)
+)
+db.commit()
+
+add_money(user_id, money)
+
+return amount, money
+
+def sell_all_processors(user_id):player = get_player(user_id)amount = player[12]money = amount * 25
+
+cursor.execute(
+    "UPDATE players SET processors=0 WHERE user_id=?",
+    (user_id,)
+)
+db.commit()
+
+add_money(user_id, money)
+
+return amount, money
+
+def sell_all_modules(user_id):player = get_player(user_id)amount = player[13]money = amount * 100
+
+cursor.execute(
+    "UPDATE players SET modules=0 WHERE user_id=?",
+    (user_id,)
+)
+db.commit()
+
+add_money(user_id, money)
+
+return amount, money
+
+def sell_all_cores(user_id):player = get_player(user_id)amount = player[14]money = amount * 500
+
+cursor.execute(
+    "UPDATE players SET cores=0 WHERE user_id=?",
+    (user_id,)
+)
+db.commit()
+
+add_money(user_id, money)
+
+return amount, money
